@@ -1,0 +1,16 @@
+# Local-only cross-compilation config for aarch64-pc-windows-msvc on Linux hosts.
+# Requires LLVM >= 19 (llvm-ml, lld-link, llvm-lib) and the Windows ARM64 SDK/MSVC libs.
+[build]
+target = ["aarch64-pc-windows-msvc"]
+
+[target.aarch64-pc-windows-msvc]
+linker = "lld-link"
+ar = "llvm-ar"
+rustflags = ["-C", "target-feature=+crt-static"]
+
+[env]
+CC_aarch64_pc_windows_msvc = "clang --target=aarch64-pc-windows-msvc"
+CXX_aarch64_pc_windows_msvc = "clang++ --target=aarch64-pc-windows-msvc"
+AR_aarch64_pc_windows_msvc = "llvm-ar"
+CC_MASM_ASM = "llvm-ml"
+CARGO_CFG_TARGET_ENV = "msvc"
