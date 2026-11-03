@@ -26,6 +26,26 @@ jobs:
       - run: cargo test --locked --quiet
       - run: cargo build --locked
 
+  # Native build on the hosted ARM64 image. A separate job: its runner label,
+  # toolchain and cache differ from the x86_64 self-hosted job above, so a
+  # failure here never blocks the existing jobs' artifacts.
+  windows-arm64:
+    runs-on: windows-11-arm
+    env:
+      CARGO_PROFILE_DEV_DEBUG: 0
+    steps:
+      - uses: actions/checkout@v7
+      - run: rustup target add aarch64-pc-windows-msvc
+      - run: cargo test --locked --quiet
+      - run: cargo build --release --locked
+      - name: Check the release zip names itself arm64
+        shell: pwsh
+        run: ./scripts/windows-zip.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-aarch64-zip
+          path: target/release/ELYTerminal-*-windows-aarch64.zip
+
   linux:
     runs-on: ubuntu-24.04
     # A clean image: the hosted one's zsh and fish setup breaks the shell tests.
